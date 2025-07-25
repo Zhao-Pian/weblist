@@ -10,7 +10,7 @@
 - js
 
 后端
-1. python
+- python
    - requests
    - flask/django
 # TODO
