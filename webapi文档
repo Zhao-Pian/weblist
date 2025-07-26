@@ -1,0 +1,160 @@
+# 123Pan API 文档
+
+## 接口列表
+
+### 1. 登录接口
+请求方式: POST  
+接口地址: `/api/login`  
+请求体:
+json{
+    "username": "your_username",
+    "password": "your_password"
+}
+成功返回:
+json{
+    "status": "success"
+}
+失败返回:
+json{
+    "error": "登录失败，错误码: xxx"
+}
+说明: 用于用户登录，登录信息会存储在 `settings.json` 中。
+
+### 2. 列出当前目录文件
+请求方式: GET  
+接口地址: `/api/list`  
+成功返回:
+json{
+    "folder": [
+        json{ "id": "1", "name": "镜像文件夹" },
+        json{ "id": "2", "name": "小猪佩奇全集" }
+    ],
+    "file": [
+        json{ "id": "4", "name": "win11镜像.iso", "size": "3.5GB" },
+        json{ "id": "5", "name": "PCL2.exe", "size": "3.52MB" }
+    ]
+}
+失败返回:
+json{
+    "error": "操作失败原因"
+}
+说明: 列出当前目录下的所有文件夹和文件，文件夹无大小信息，文件包含大小信息（已格式化）。
+
+### 3. 进入子目录
+请求方式: GET  
+接口地址: `/api/list_folder/<path:folder_path>`  
+示例: `/api/list_folder/学习资料/小猪佩奇全集`  
+成功返回:
+json{
+    "folder": [
+        json{ "id": "1", "name": "第三季" },
+        json{ "id": "2", "name": "第二季" }
+    ],
+    "file": [
+        json{ "id": "4", "name": "1.mp4", "size": "3.5GB" }
+    ]
+}
+失败返回:
+json{
+    "error": "没有找到对应文件夹或文件"
+}
+说明: 根据传入的路径进入子目录，并返回该目录下的文件和文件夹列表。
+
+### 4. 获取文件下载链接
+请求方式: GET  
+接口地址: `/api/parsing/<path:file_path>`  
+示例: `/api/parsing/学习资料/小猪佩奇全集/1.mp4`  
+成功返回:
+json{
+    "url": "https://url.com/学习资料/小猪佩奇全集/1.mp4"
+}
+失败返回:json{
+    "error": "没有找到对应文件夹或文件"
+}说明: 根据传入的文件路径获取该文件的下载链接。
+
+### 5. 上传文件
+请求方式: POST  
+接口地址: `/api/upload`  
+请求体: `multipart/form-data` 格式，包含文件字段 `file`  
+成功返回:
+json{
+    "status": "success",
+    "file_id": "13579"
+}
+失败返回:
+json{
+    "error": "上传失败原因"
+}
+说明: 上传本地文件到当前目录，支持单个文件上传。
+
+### 6. 创建文件夹
+请求方式: POST  
+接口地址: `/api/create_folder`  
+请求体:
+json{
+    "folder_name": "新建文件夹"
+}
+成功返回:
+json{
+    "status": "success",
+    "folder_id": "12345"
+}
+失败返回:
+json{
+    "error": "文件夹创建失败"
+}
+说明: 在当前目录下创建新文件夹。
+
+### 7. 删除文件/文件夹
+请求方式: POST  
+接口地址: `/api/delete`  
+请求体:
+json{
+    "file_id": "67890"
+}
+成功返回:
+json{
+    "status": "success"
+}
+失败返回:
+json{
+    "error": "删除操作失败"
+}
+说明: 根据文件/文件夹ID删除对应的项目。
+
+### 8. 生成分享链接
+请求方式: POST  
+接口地址: `/api/share`  
+请求体:
+json{
+    "file_id": "24680"
+}
+成功返回:
+json{
+    "url": "https://share.123pan.com/xxxxx"
+}
+失败返回:
+json{
+    "error": "分享失败"
+}
+说明: 根据文件ID生成该文件的分享链接。
+
+### 9. 重新加载会话
+请求方式: GET  
+接口地址: `/api/reload_session`  
+成功返回:
+json{
+    "status": "success",
+    "message": "会话已重新加载"
+}
+失败返回:
+json{
+    "error": "会话加载失败原因"
+}
+说明: 重新登录并加载会话，用于维持登录状态。
+
+## 错误代码说明
+- 400: 请求参数错误或路径不存在
+- 401: 认证失败（登录信息无效）
+- 404: 未找到指定的文件或文件夹
+- 500: 服务器内部错误
