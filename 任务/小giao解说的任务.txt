@@ -1,0 +1,108 @@
+小giao解说 - 后端核心API开发与配置管理系统任务清单
+
+职责范围：负责后端Python API开发、管理员配置管理、JSON配置文件处理
+
+项目架构：
+- 单用户管理员系统（仅支持注册一个管理员账号）
+- 后端Python直接调用已打包的api.py
+- 前端个性化通过JSON配置文件实现
+- 管理员可修改设计风格、HTML模板、主题配置等
+
+**第一阶段：后端核心API开发（第1-2周）**
+
+**1.1 管理员认证系统**
+- 单用户注册：POST /api/admin/register
+  参数：{username: string, password: string}
+  限制：仅允许注册一次，已注册返回错误
+  
+- 管理员登录：POST /api/admin/login
+  参数：{username: string, password: string}
+  返回：{token: string, expires_in: 3600}
+
+- 登录状态验证：GET /api/admin/check
+  返回：{logged_in: boolean, username: string}
+
+**1.2 配置文件管理API**
+- 获取当前配置：GET /api/config
+  返回：完整的config.json内容
+  
+- 更新配置：PUT /api/config
+  参数：{config: object}
+  功能：验证并更新JSON配置文件
+  
+- 重置默认配置：POST /api/config/reset
+  功能：恢复默认配置文件
+
+**第二阶段：文件管理API集成（第3-4周）**
+
+**2.1 网盘API封装**
+- 基于pan123.py实现以下接口：
+  - 文件列表：GET /api/files?path=/目录路径
+  - 文件上传：POST /api/upload
+  - 文件下载：GET /api/download?path=文件路径
+  - 文件删除：DELETE /api/delete?path=文件路径
+  - 文件夹操作：POST /api/folder/create, DELETE /api/folder/delete
+
+**2.2 配置验证系统**
+- 配置文件格式验证
+- 主题色值验证（支持hex、rgb格式）
+- 文件路径安全检查
+- HTML模板语法验证
+
+**第三阶段：安全与性能优化（第5-6周）**
+
+**3.1 安全配置**
+- 密码加密存储（bcrypt）
+- API访问频率限制
+- 文件上传安全检查
+- 路径遍历攻击防护
+
+**3.2 性能优化**
+- 配置文件缓存机制
+- API响应缓存（5分钟）
+- 文件列表分页加载
+- 静态资源CDN配置
+
+**技术规范：**
+- Python 3.8+，使用FastAPI框架
+- JSON配置文件：config.json（支持热更新）
+- 日志系统：记录所有管理员操作
+- 错误处理：统一的错误响应格式
+
+**配置文件结构（config.json）：**
+```json
+{
+  "site": {
+    "title": "网盘管理系统",
+    "description": "个人网盘管理工具",
+    "logo": "/static/logo.png",
+    "favicon": "/static/favicon.ico"
+  },
+  "theme": {
+    "primary_color": "#1890ff",
+    "background_color": "#f5f5f5",
+    "text_color": "#333333"
+  },
+  "layout": {
+    "header_html": "<header>...</header>",
+    "footer_html": "<footer>...</footer>",
+    "custom_css": "/* 自定义CSS */"
+  },
+  "upload": {
+    "max_file_size": 2147483648,
+    "allowed_types": ["jpg", "png", "pdf", "zip"]
+  }
+}
+```
+
+**测试要求：**
+- 单元测试覆盖率>80%
+- API接口测试（Postman集合）
+- 配置文件验证测试
+- 并发访问测试
+
+**交付物：**
+1. 完整的后端API服务
+2. 配置文件管理系统
+3. API接口文档（OpenAPI 3.0）
+4. 部署脚本和配置模板
