@@ -1,0 +1,6 @@
+/.idea
+/.vs
+/__pycache__
+/.venv
+server/__pycache__
+User-account-password.json
